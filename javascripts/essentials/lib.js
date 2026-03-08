@@ -2624,95 +2624,13 @@ lib.print = (print_element) => {
 
   var printWindow = window.open("", "_blank", "width=900,height=600");
 
-  printWindow.document.head.append(lib.element.create("link", {
+  let css = lib.element.create("link", {
     rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/main.css?v=2.5",
+    href: "/front-end/stylesheets/app.css?v=3.2",
     type: "text/css"
-  }));
+  });
 
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/loader.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/carousel.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/elements.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/visual.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/dropdown.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/sidenav.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/actions.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/size.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/position.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/image.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/tooltip.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/box.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/responsivity.css?v=2.5",
-    type: "text/css"
-  }));
-
-  printWindow.document.head.append(lib.element.create("link", {
-    rel: "stylesheet",
-    href: "https://seal-app-bv3qd.ondigitalocean.app/front-end/stylesheets/fonts.css?v=2.5",
-    type: "text/css"
-  }));
+  printWindow.document.head.append(css);
 
   let container = lib.element.create("div", {
     class: "p-box a1 container"
@@ -2720,7 +2638,6 @@ lib.print = (print_element) => {
 
   printWindow.document.body.append(container);
 
-  // Btn to action
   let print_btn = lib.element.create("div", {
     class: "box b1 container icon noprint padding-10 pointer"
   });
@@ -2732,8 +2649,9 @@ lib.print = (print_element) => {
 
   print_btn.append(lib.element.icon("b10", "25", "/images/icon/print.png"));
 
-  // Use the element
-  container.append(print_element);
+  css.onload = () => {
+    container.append(print_element);
+  };
 
   print_btn.addEventListener("click", () => {
     printWindow.print();
