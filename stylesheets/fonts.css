@@ -42,6 +42,14 @@
   font-family: Consolas, monospace;
 }
 
+.inter {
+		font-family: "Inter", sans-serif;
+}
+
+.poppins {
+  font-family: "Poppins", sans-serif;
+}
+
 .font-05 {
   font-size: 0.5em;
 }
