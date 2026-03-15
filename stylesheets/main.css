@@ -134,7 +134,8 @@ tr:hover {
 }
 
 .wrap {
-	overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .nowrap {
