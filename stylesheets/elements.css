@@ -116,13 +116,17 @@
 }
 
 .btn-confirm {
-	background-color: #21d256;
+	background-color: #16a34a;
 	color: #fff;
+  	border-radius: 8px;
+	font-weight: 500;
+	transition: all 0.2s ease;
 }
 
 .btn-confirm:hover {
-	background-color: #10c73c;
+	background-color: #15803d;
 	color: #fff;
+  	transform: translateY(-1px);
 }
 
 .btn-cancel {

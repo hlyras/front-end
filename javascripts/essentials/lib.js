@@ -150,8 +150,10 @@ lib.popup = (element, cb, fullscreen = false, ground = true) => {
     style: "z-index: 10;"
   });
   const msg_popup = lib.element.create("div", {
-    class: `msg-popup ${fullscreen ? 'fullscreen' : ''} box a3-4 container ${ground ? 'ground' : 'bg'} radius-5`,
-    style: "display: flex;flex-direction: column;overflow: hidden;"
+    class: fullscreen
+      ? `msg-popup fullscreen ${ground ? 'ground' : 'bg'}`
+      : `msg-popup box a3-4 container ${ground ? 'ground' : 'bg'} radius-5`,
+    style: "display: flex; flex-direction: column; overflow: hidden;"
   });
 
   const close_div = lib.element.create("div", {
@@ -173,12 +175,13 @@ lib.popup = (element, cb, fullscreen = false, ground = true) => {
   msg_popup.append(close_div);
 
   const content_wrapper = lib.element.create("div", {
-    class: "scroll-y-auto scroll-small",
+    class: "container",
     style: `
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
-  `
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    `
   });
   msg_popup.append(content_wrapper);
 
@@ -402,6 +405,12 @@ lib.confirm = (msg, cb, confirm_message, cancel_message) => {
   document.body.append(msg_div);
 
   document.addEventListener("keydown", keydown);
+};
+
+lib.confirmAsync = (message) => {
+  return new Promise(resolve => {
+    lib.confirm(message, r => resolve(r));
+  });
 };
 
 lib.cookieConfirm = (msg, cb) => {
@@ -2271,7 +2280,6 @@ lib.element.svg = (box, size, svgString, action) => {
   // aplica seu padrão visual
   svg.setAttribute("width", size);
   svg.setAttribute("height", size);
-  svg.style.cursor = "pointer";
 
   if (action) {
     svg.onclick = action;
@@ -2626,7 +2634,7 @@ lib.print = (print_element) => {
 
   let css = lib.element.create("link", {
     rel: "stylesheet",
-    href: "/front-end/stylesheets/app.css?v=3.2",
+    href: "/front-end/stylesheets/app.css?v=1.0",
     type: "text/css"
   });
 
