@@ -20,6 +20,118 @@ window.addEventListener('popstate', () => {
   }
 });
 
+lib.popup = (element, cb, fullscreen = false, ground = true, { closable = true } = {}) => {
+  const focused_btn = document.querySelector(':focus');
+  focused_btn && focused_btn.blur();
+
+  const msg_div = lib.element.create("div", {
+    class: "msg h-center",
+    style: "z-index: 10;"
+  });
+
+  const msg_popup = lib.element.create("div", {
+    class: fullscreen
+      ? `msg-popup fullscreen ${ground ? 'ground' : 'bg'}`
+      : `msg-popup box a3-4 container ${ground ? 'ground' : 'bg'} radius-5`,
+    style: "display: flex; flex-direction: column; overflow: hidden;"
+  });
+
+  const close_div = lib.element.create("div", {
+    class: "close-container",
+    style: closable
+      ? "position: absolute; top: 5px; right: 5px; z-index: 11;"
+      : "display:none;"
+  });
+
+  let close_icon = lib.element.create("div", {
+    class: "ground size-20 radius-50 padding-1 absolute pointer",
+    style: "top: 5px; right: 5px;"
+  });
+  close_div.append(close_icon);
+
+  close_icon.append(lib.element.create("img", {
+    class: "size-20 opacity-out-08",
+    src: "/images/icon/close-small.png"
+  }));
+
+  msg_popup.append(close_div);
+
+  const content_wrapper = lib.element.create("div", {
+    class: "container",
+    style: `
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    `
+  });
+  msg_popup.append(content_wrapper);
+
+  content_wrapper.append(element);
+
+  msg_div.append(msg_popup);
+  document.body.append(msg_div);
+  document.body.style.overflow = "hidden";
+
+  let popupId = lib.string.gen(5);
+
+  function esc(from) {
+    let top = lib.historyStack[lib.historyStack.length - 1];
+    if (!top || top.esc !== esc) return;
+
+    if (from === "popout") {
+      lib.popStateFromStack();
+      document.removeEventListener("keydown", keydown);
+      document.body.style.overflow = "auto";
+      msg_div.remove();
+      if (typeof cb === 'function') { return cb(); }
+      return;
+    }
+
+    if (from != "popstate") {
+      if (!closable) return;
+      return history.back();
+    }
+
+    if (!closable) {
+      history.pushState({ popupId: popupId }, '');
+      return;
+    }
+
+    lib.popStateFromStack();
+    document.removeEventListener("keydown", keydown);
+    document.body.style.overflow = "auto";
+    msg_div.remove();
+    if (typeof cb === 'function') { return cb(); }
+  }
+
+  function keydown(e) {
+    if (e.keyCode != 27) return;
+
+    let top = lib.historyStack[lib.historyStack.length - 1];
+    if (!top || top.esc !== esc) return;
+
+    esc();
+  }
+
+  lib.pushStateToStack({ popupId: popupId }, esc);
+
+  if (closable) {
+    msg_div.addEventListener("click", esc);
+    close_icon.addEventListener("click", esc);
+  }
+
+  msg_popup.addEventListener("click", e => e.stopPropagation());
+  document.addEventListener("keydown", keydown);
+};
+
+lib.popout = () => {
+  let top = lib.historyStack[lib.historyStack.length - 1];
+  if (!top) return;
+
+  top.esc("popout");
+};
+
 // Essa função será desativada, utilizar lib.message
 lib.msg = (msg) => {
   if (!document.getElementById("msg")) {
@@ -139,88 +251,6 @@ lib.message = (msg, cb) => {
   msg_popup.addEventListener("click", e => e.stopPropagation());
   close_icon.addEventListener("click", esc);
   document.addEventListener("keydown", keydown);
-};
-
-lib.popup = (element, cb, fullscreen = false, ground = true) => {
-  const focused_btn = document.querySelector(':focus');
-  focused_btn && focused_btn.blur();
-
-  const msg_div = lib.element.create("div", {
-    class: "msg h-center",
-    style: "z-index: 10;"
-  });
-  const msg_popup = lib.element.create("div", {
-    class: fullscreen
-      ? `msg-popup fullscreen ${ground ? 'ground' : 'bg'}`
-      : `msg-popup box a3-4 container ${ground ? 'ground' : 'bg'} radius-5`,
-    style: "display: flex; flex-direction: column; overflow: hidden;"
-  });
-
-  const close_div = lib.element.create("div", {
-    class: "close-container",
-    style: "position: absolute; top: 5px; right: 5px; z-index: 11;" // Estilos ajustados para a posição superior direita
-  });
-
-  let close_icon = lib.element.create("div", {
-    class: "ground size-20 radius-50 padding-1 absolute pointer",
-    style: "top: 5px; right: 5px;"
-  });
-  close_div.append(close_icon);
-
-  close_icon.append(lib.element.create("img", {
-    class: "size-20 opacity-out-08",
-    src: "/images/icon/close-small.png"
-  }));
-
-  msg_popup.append(close_div);
-
-  const content_wrapper = lib.element.create("div", {
-    class: "container",
-    style: `
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    `
-  });
-  msg_popup.append(content_wrapper);
-
-  content_wrapper.append(element);
-
-  msg_div.append(msg_popup);
-  document.body.append(msg_div);
-  document.body.style.overflow = "hidden";
-
-  function esc(from) {
-    if (from != "popstate") {
-      return history.back();
-    }
-
-    lib.popStateFromStack();
-    document.removeEventListener("keydown", keydown);
-    document.body.style.overflow = "auto";
-    msg_div.remove();
-    if (typeof cb === 'function') { return cb(); }
-  }
-
-  function keydown(e) {
-    if (e.keyCode == 27) { esc(); }
-  };
-
-  // Exemplo de uso:
-  let popupId = lib.string.gen(5);
-  lib.pushStateToStack({ popupId: popupId }, esc);
-
-  msg_div.addEventListener("click", esc);
-  msg_popup.addEventListener("click", e => e.stopPropagation());
-  close_icon.addEventListener("click", esc);
-  document.addEventListener("keydown", keydown);
-};
-
-lib.popout = element => {
-  history.back();
-  element.parentNode.parentNode.remove();
-  document.body.style.overflow = "auto";
 };
 
 lib.auth = (message, cb) => {
